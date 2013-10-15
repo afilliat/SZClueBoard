@@ -2,6 +2,7 @@ package board;
 
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,87 +26,96 @@ public class Board {
 		super();
 		boardfile = "boardnoindex.csv";
 		roomsfile = "legend.csv";
-		loadConfigFiles();
-		calcAdjacencies();
+		try{		
+			loadConfigFiles();
+			calcAdjacencies();
+		}
+		catch (Exception e) {
+			System.out.println("EXCEPTION");
+			System.out.println(e);
+		}
 	}
 
 	public Board(String file1, String file2) {
 		boardfile = file1;
 		roomsfile = file2;
-		loadConfigFiles();
-		calcAdjacencies();
+		try{		
+			loadConfigFiles();
+			calcAdjacencies();
+		}
+		catch (Exception e) {
+			System.out.println("EXCEPTION");
+			System.out.println(e);
+		}
 	}
 
 	public void loadConfigFiles() {
+		try{
 		loadRoomConfig(roomsfile);
 		loadBoardConfig(boardfile);
-	}
-
-	public void loadRoomConfig(String fileName) {
-		Scanner CSVFile;
-
-		try {
-			CSVFile = new Scanner(new FileReader(fileName));
-			rooms.clear();
-			Character initial;
-			String room;
-
-			while(CSVFile.hasNextLine()){
-				String dataRow = CSVFile.nextLine();
-
-				initial = dataRow.charAt(0);
-				room = dataRow.substring(3);
-
-
-				//check format
-				if(dataRow.charAt(1) == ',' && !room.contains(",")) {
-					rooms.put(dataRow.charAt(0), room);
-				} else {
-					throw new BadConfigFormatException();
-				}
-			}
-
-			CSVFile.close(); // Close the file once all data has been read.
 		} catch (Exception e) {
 			System.out.println("EXCEPTION");
 			System.out.println(e);
 		}
 	}
 
-	public void loadBoardConfig(String fileName) {
-		BufferedReader CSVFile;
+	public void loadRoomConfig(String fileName) throws BadConfigFormatException, FileNotFoundException {
+		Scanner CSVFile;
 
-		try {
-			CSVFile = new BufferedReader(new FileReader(fileName));		
-			String dataRow = CSVFile.readLine(); // Read first line.
 
-			for(int row = 0; dataRow != null; row++) {
-				String[] thisRow = dataRow.split(",");
-				int col;
-				for(col = 0; col < thisRow.length; col++ ) {
-					if(!thisRow[col].equals("W")) {
-						RoomCell room = new RoomCell(row, col, thisRow[col]);
-						cells.add(room);
-					} else {
-						cells.add(new WalkwayCell(row, col));
-					}
-				}
-				//if (row != this.getNumRows()) {
-				//  if (!(col == this.getNumColumns())) {
-				//System.out.println(this.getNumRows());
-				//System.out.println(row);
-				//System.out.println("cols " + col);
-				//System.out.println("columns " + this.getNumColumns());
-				//System.out.println("Check exception");
-				//	  throw new BadConfigFormatException();
-				// }
-				//}
-				dataRow = CSVFile.readLine(); // Read next line of data.
+		CSVFile = new Scanner(new FileReader(fileName));
+		rooms.clear();
+		Character initial;
+		String room;
+
+		while(CSVFile.hasNextLine()){
+			String dataRow = CSVFile.nextLine();
+
+			initial = dataRow.charAt(0);
+			room = dataRow.substring(3);
+
+
+			//check format
+			if(dataRow.charAt(1) == ',' && !room.contains(",")) {
+				rooms.put(dataRow.charAt(0), room);
+			} else {
+				throw new BadConfigFormatException();
 			}
-			CSVFile.close(); // Close the file once all data has been read.
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
 		}
+
+		CSVFile.close(); // Close the file once all data has been read.
+
+	}
+
+	public void loadBoardConfig(String fileName) throws FileNotFoundException, BadConfigFormatException {
+		Scanner CSVFile;
+
+
+		CSVFile = new Scanner(new FileReader(fileName));		
+		int numColumns = -1;
+
+		for(int row = 0; CSVFile.hasNextLine(); row++) {
+			String dataRow = CSVFile.nextLine(); // Read next line of data.
+			String[] thisRow = dataRow.split(",");
+
+			//check columns
+			if(thisRow.length != numColumns && numColumns != -1){
+				throw new BadConfigFormatException();
+			}
+			numColumns = thisRow.length;
+
+			int col;
+			for(col = 0; col < thisRow.length; col++ ) {
+				if(!thisRow[col].equals("W")) {
+					RoomCell room = new RoomCell(row, col, thisRow[col]);
+					cells.add(room);
+				} else {
+					cells.add(new WalkwayCell(row, col));
+				}
+			}
+		}
+		CSVFile.close(); // Close the file once all data has been read.
+
 	}
 
 	public void calcAdjacencies() {
