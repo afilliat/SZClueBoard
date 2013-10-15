@@ -1,5 +1,6 @@
 package board;
 
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Scanner;
 import board.RoomCell.DoorDirection;
 
 public class Board {
-	
+
 	private Map<Integer, ArrayList<Integer>> adjs = new HashMap<Integer, ArrayList<Integer>>(); 
 	private HashSet<BoardCell> moves = new HashSet<BoardCell>();
 	private ArrayList<Integer> visited = new ArrayList<Integer>();
@@ -19,7 +20,7 @@ public class Board {
 	public ArrayList<BoardCell> cells = new ArrayList<BoardCell>();
 	private String boardfile;
 	private String roomsfile;
-	
+
 	public Board() {
 		super();
 		boardfile = "boardnoindex.csv";
@@ -27,22 +28,22 @@ public class Board {
 		loadConfigFiles();
 		calcAdjacencies();
 	}
-	
+
 	public Board(String file1, String file2) {
 		boardfile = file1;
 		roomsfile = file2;
 		loadConfigFiles();
 		calcAdjacencies();
 	}
-	
+
 	public void loadConfigFiles() {
 		loadRoomConfig(roomsfile);
 		loadBoardConfig(boardfile);
 	}
-	
+
 	public void loadRoomConfig(String fileName) {
 		Scanner CSVFile;
-		  
+
 		try {
 			CSVFile = new Scanner(new FileReader(fileName));
 			rooms.clear();
@@ -51,55 +52,62 @@ public class Board {
 
 			while(CSVFile.hasNextLine()){
 				String dataRow = CSVFile.nextLine();
-				
+
 				initial = dataRow.charAt(0);
-				room = dataRow.substring(2);
-				rooms.put(initial, room);
+				room = dataRow.substring(3);
+
+
+				//check format
+				if(dataRow.charAt(1) == ',' && !room.contains(",")) {
+					rooms.put(dataRow.charAt(0), room);
+				} else {
+					throw new BadConfigFormatException();
 				}
-			  
+			}
+
 			CSVFile.close(); // Close the file once all data has been read.
 		} catch (Exception e) {
 			System.out.println("EXCEPTION");
 			System.out.println(e);
 		}
 	}
-	
+
 	public void loadBoardConfig(String fileName) {
 		BufferedReader CSVFile;
-		  
+
 		try {
 			CSVFile = new BufferedReader(new FileReader(fileName));		
 			String dataRow = CSVFile.readLine(); // Read first line.
-  
-			  for(int row = 0; dataRow != null; row++) {
-				  String[] thisRow = dataRow.split(",");
-				  int col;
-				  for(col = 0; col < thisRow.length; col++ ) {
-					  if(!thisRow[col].equals("W")) {
-						  RoomCell room = new RoomCell(row, col, thisRow[col]);
-						  cells.add(room);
-					  } else {
-						  cells.add(new WalkwayCell(row, col));
-					  }
-				  }
-				  //if (row != this.getNumRows()) {
-					//  if (!(col == this.getNumColumns())) {
-						  //System.out.println(this.getNumRows());
-						  //System.out.println(row);
-						  //System.out.println("cols " + col);
-						  //System.out.println("columns " + this.getNumColumns());
-						  //System.out.println("Check exception");
-					//	  throw new BadConfigFormatException();
-					 // }
-				  //}
-				  dataRow = CSVFile.readLine(); // Read next line of data.
-			  }
-			  CSVFile.close(); // Close the file once all data has been read.
+
+			for(int row = 0; dataRow != null; row++) {
+				String[] thisRow = dataRow.split(",");
+				int col;
+				for(col = 0; col < thisRow.length; col++ ) {
+					if(!thisRow[col].equals("W")) {
+						RoomCell room = new RoomCell(row, col, thisRow[col]);
+						cells.add(room);
+					} else {
+						cells.add(new WalkwayCell(row, col));
+					}
+				}
+				//if (row != this.getNumRows()) {
+				//  if (!(col == this.getNumColumns())) {
+				//System.out.println(this.getNumRows());
+				//System.out.println(row);
+				//System.out.println("cols " + col);
+				//System.out.println("columns " + this.getNumColumns());
+				//System.out.println("Check exception");
+				//	  throw new BadConfigFormatException();
+				// }
+				//}
+				dataRow = CSVFile.readLine(); // Read next line of data.
+			}
+			CSVFile.close(); // Close the file once all data has been read.
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
-	
+
 	public void calcAdjacencies() {
 		int index;
 		for (index = 0; index <= calcIndex(getNumRows(), getNumColumns()); index ++ ) {
@@ -130,7 +138,7 @@ public class Board {
 			//System.out.println("Cell indexed " + index + " " + adjs.get(index));
 		}
 	}
-	
+
 	public void startTargets(int row, int column, int numSteps){
 		int index = calcIndex(row, column);
 		visited.clear();
@@ -138,7 +146,7 @@ public class Board {
 		moves.clear();
 		calcTargets(index, numSteps);
 	}
-	
+
 	public void calcTargets(int index, int numSteps) {
 		ArrayList<Integer> possibleSpots = new ArrayList<Integer>();
 		for (Integer i : getAdjList(index)) {
@@ -146,7 +154,7 @@ public class Board {
 				possibleSpots.add(i);
 			}
 		}
-		
+
 		for (Integer j: possibleSpots) {
 			visited.add(j);
 			if (this.getCellAt(j).isDoorway())
@@ -161,46 +169,46 @@ public class Board {
 			}
 		}
 	}
-		
+
 	public HashSet<BoardCell> getTargets(){
 		return moves;
 	}
-	
+
 	public ArrayList<Integer> getAdjList(Integer index) {
 		return adjs.get(index);
 	}
-	
+
 	public int getNumRows() {
-		  BufferedReader CSVboard;
-		  int counterRows = 0;
-		  
+		BufferedReader CSVboard;
+		int counterRows = 0;
+
 		try {
 			CSVboard = new BufferedReader(new FileReader(boardfile));
-			
+
 			String dataRow = CSVboard.readLine(); // Read first line.
 
-			  while (dataRow != null){
-			      dataRow = CSVboard.readLine(); // Read next line of data.
-			      counterRows++;				 // counts rows of the board
-			  }
-			  
-			  CSVboard.close(); // Close the file once all data has been read.
-			  return counterRows; //remove one to compensate for the row of numbers
+			while (dataRow != null){
+				dataRow = CSVboard.readLine(); // Read next line of data.
+				counterRows++;				 // counts rows of the board
+			}
+
+			CSVboard.close(); // Close the file once all data has been read.
+			return counterRows; //remove one to compensate for the row of numbers
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return 0;
 		}	
 	}
-	
+
 	public int getNumColumns() {
-		  BufferedReader CSVboard;
-		  int counterColumns = 0;
-		  
+		BufferedReader CSVboard;
+		int counterColumns = 0;
+
 		try {
 			CSVboard = new BufferedReader(new FileReader(boardfile));
-			
+
 			String dataRow = CSVboard.readLine(); // Read first line.
-			
+
 			if (dataRow != null) {
 				char[] firstRow = dataRow.toCharArray(); //converts line to character array.
 				for (char c : firstRow)
@@ -215,23 +223,23 @@ public class Board {
 			return 0;
 		}	  	
 	}
-	
+
 	public RoomCell getRoomCellAt(int row, int column) {
 		int index = calcIndex(row, column);
 		RoomCell room = new RoomCell(cells.get(index));
 		return room;
 	}
-	
+
 	public WalkwayCell getWalkwayCellAt(int row, int column) {
 		int index = calcIndex(row, column);
 		WalkwayCell walk = new WalkwayCell(cells.get(index));
 		return walk;
 	}
-	
+
 	public BoardCell getCellAt(int index) {
 		return cells.get(index);
 	}
-	
+
 	public Map<Character, String> getRooms(String fileName) {	
 		return rooms;
 	}
@@ -244,13 +252,13 @@ public class Board {
 		else 
 			return (row*getNumColumns())+column;
 	}
-	
+
 	public static void main(String args[]) {
 		Board b = new Board();
 		System.out.println(b.getAdjList(6));
 		System.out.println(b.getAdjList(493));
 		System.out.println(b.getAdjList(b.calcIndex(6,15)));
 		System.out.println(b.getAdjList(b.calcIndex(4,9)));
-		
+
 	}
 }
