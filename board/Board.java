@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
 
 import board.RoomCell.DoorDirection;
 
@@ -40,21 +41,20 @@ public class Board {
 	}
 	
 	public void loadRoomConfig(String fileName) {
-		BufferedReader CSVFile;
+		Scanner CSVFile;
 		  
 		try {
-			CSVFile = new BufferedReader(new FileReader(fileName));
+			CSVFile = new Scanner(new FileReader(fileName));
 			rooms.clear();
-			String dataRow = CSVFile.readLine(); // Read first line.
 			Character initial;
 			String room;
 
-			while(dataRow != null){
-
+			while(CSVFile.hasNextLine()){
+				String dataRow = CSVFile.nextLine();
+				
 				initial = dataRow.charAt(0);
 				room = dataRow.substring(2);
 				rooms.put(initial, room);
-				dataRow = CSVFile.readLine();
 				}
 			  
 			CSVFile.close(); // Close the file once all data has been read.
