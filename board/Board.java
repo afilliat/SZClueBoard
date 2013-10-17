@@ -21,6 +21,8 @@ public class Board {
 	public ArrayList<BoardCell> cells = new ArrayList<BoardCell>();
 	private String boardfile;
 	private String roomsfile;
+	private int numRows;
+	private int numColumns;
 
 	public Board() {
 		super();
@@ -92,7 +94,8 @@ public class Board {
 
 
 		CSVFile = new Scanner(new FileReader(fileName));		
-		int numColumns = -1;
+		numColumns = -1;
+		numRows = 0;
 
 		for(int row = 0; CSVFile.hasNextLine(); row++) {
 			String dataRow = CSVFile.nextLine(); // Read next line of data.
@@ -109,7 +112,7 @@ public class Board {
 
 
 				if(rooms.containsKey((Character)thisRow[col].charAt(0))){
-					
+
 					if(!thisRow[col].equals("W")) {
 						RoomCell room = new RoomCell(row, col, thisRow[col]);
 						cells.add(room);
@@ -118,6 +121,8 @@ public class Board {
 					}
 				} else { throw new BadConfigFormatException();}
 			} 
+			
+			numRows++;
 		}
 		CSVFile.close(); // Close the file once all data has been read.
 
@@ -194,49 +199,11 @@ public class Board {
 	}
 
 	public int getNumRows() {
-		BufferedReader CSVboard;
-		int counterRows = 0;
-
-		try {
-			CSVboard = new BufferedReader(new FileReader(boardfile));
-
-			String dataRow = CSVboard.readLine(); // Read first line.
-
-			while (dataRow != null){
-				dataRow = CSVboard.readLine(); // Read next line of data.
-				counterRows++;				 // counts rows of the board
-			}
-
-			CSVboard.close(); // Close the file once all data has been read.
-			return counterRows; //remove one to compensate for the row of numbers
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return 0;
-		}	
+		return numRows;
 	}
 
 	public int getNumColumns() {
-		BufferedReader CSVboard;
-		int counterColumns = 0;
-
-		try {
-			CSVboard = new BufferedReader(new FileReader(boardfile));
-
-			String dataRow = CSVboard.readLine(); // Read first line.
-
-			if (dataRow != null) {
-				char[] firstRow = dataRow.toCharArray(); //converts line to character array.
-				for (char c : firstRow)
-					if (c == ',')
-						counterColumns++;				//counts number of column separations
-				counterColumns++;						//adds one more for the final column
-			}
-			CSVboard.close(); // Close the file once all data has been read.
-			return counterColumns; // remove one to compensate for the column of numbers.
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return 0;
-		}	  	
+		return numColumns;
 	}
 
 	public RoomCell getRoomCellAt(int row, int column) {
