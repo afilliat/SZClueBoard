@@ -51,8 +51,8 @@ public class Board {
 
 	public void loadConfigFiles() {
 		try{
-		loadRoomConfig(roomsfile);
-		loadBoardConfig(boardfile);
+			loadRoomConfig(roomsfile);
+			loadBoardConfig(boardfile);
 		} catch (Exception e) {
 			System.out.println("EXCEPTION");
 			System.out.println(e);
@@ -106,13 +106,18 @@ public class Board {
 
 			int col;
 			for(col = 0; col < thisRow.length; col++ ) {
-				if(!thisRow[col].equals("W")) {
-					RoomCell room = new RoomCell(row, col, thisRow[col]);
-					cells.add(room);
-				} else {
-					cells.add(new WalkwayCell(row, col));
-				}
-			}
+
+
+				if(rooms.containsKey((Character)thisRow[col].charAt(0))){
+					
+					if(!thisRow[col].equals("W")) {
+						RoomCell room = new RoomCell(row, col, thisRow[col]);
+						cells.add(room);
+					} else {
+						cells.add(new WalkwayCell(row, col));
+					}
+				} else { throw new BadConfigFormatException();}
+			} 
 		}
 		CSVFile.close(); // Close the file once all data has been read.
 
@@ -122,24 +127,24 @@ public class Board {
 		int index;
 		for (index = 0; index <= calcIndex(getNumRows(), getNumColumns()); index ++ ) {
 			ArrayList<Integer> spots = new ArrayList<Integer>();
-			if (cells.get(index).getType() == "W" || cells.get(index).isDoorway()) {
+			if (cells.get(index).getType() == 'W' || cells.get(index).isDoorway()) {
 				if ((index+1) % (getNumColumns()) != 0) {
-					if (cells.get(index + 1).getType() == "W" || ((cells.get(index + 1).isDoorway()) && cells.get(index + 1).getDoorDirection() == DoorDirection.LEFT )){
+					if (cells.get(index + 1).getType() == 'W' || ((cells.get(index + 1).isDoorway()) && cells.get(index + 1).getDoorDirection() == DoorDirection.LEFT )){
 						spots.add(index + 1);
 					}
 				}
 				if (index % getNumColumns() != 0){
-					if (cells.get(index - 1).getType() == "W" || ((cells.get(index - 1).isDoorway()) && cells.get(index - 1).getDoorDirection() == DoorDirection.RIGHT )) {
+					if (cells.get(index - 1).getType() == 'W' || ((cells.get(index - 1).isDoorway()) && cells.get(index - 1).getDoorDirection() == DoorDirection.RIGHT )) {
 						spots.add(index - 1);
 					}
 				}
 				if ((index + this.getNumColumns()) <= calcIndex(this.getNumRows(), this.getNumColumns())){
-					if (cells.get(index + this.getNumColumns()).getType() == "W" || ((cells.get(index + this.getNumColumns()).isDoorway()) && cells.get(index + this.getNumColumns()).getDoorDirection() == DoorDirection.UP )) {
+					if (cells.get(index + this.getNumColumns()).getType() == 'W' || ((cells.get(index + this.getNumColumns()).isDoorway()) && cells.get(index + this.getNumColumns()).getDoorDirection() == DoorDirection.UP )) {
 						spots.add(index + this.getNumColumns());
 					}
 				}
 				if (index - this.getNumColumns() >= 0){
-					if (cells.get(index - this.getNumColumns()).getType() == "W" || ((cells.get(index - this.getNumColumns()).isDoorway()) && cells.get(index - this.getNumColumns()).getDoorDirection() == DoorDirection.DOWN )) {
+					if (cells.get(index - this.getNumColumns()).getType() == 'W' || ((cells.get(index - this.getNumColumns()).isDoorway()) && cells.get(index - this.getNumColumns()).getDoorDirection() == DoorDirection.DOWN )) {
 						spots.add(index - this.getNumColumns());
 					}
 				}

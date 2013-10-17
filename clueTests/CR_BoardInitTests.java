@@ -95,6 +95,7 @@ public class CR_BoardInitTests {
 		}
 		Assert.assertEquals(16, numDoors);
 	}
+	
 
 	
 	@Test

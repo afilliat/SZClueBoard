@@ -8,7 +8,8 @@ public class BoardCell {
 
 	private int row;
 	private int col;
-	private String type;
+	private char type;
+	private String input;
 	
 	
 	public Boolean isDoorway() {
@@ -31,8 +32,12 @@ public class BoardCell {
 		return col;
 	}
 
-	public String getType() {
+	public char getType() {
 		return type;
+	}
+	
+	public String getInput(){
+		return input;
 	}
 
 	@Override

@@ -5,7 +5,8 @@ public class RoomCell extends BoardCell {
 	private Boolean isDoor = false;
 	public enum DoorDirection {UP,DOWN,LEFT,RIGHT,NONE};
 	DoorDirection dd;
-	private String type;
+	private char type;
+	private String input;
 	private int row;
 	private int col;
 	
@@ -22,32 +23,34 @@ public class RoomCell extends BoardCell {
 		this.row = cell.getRow();
 		this.col = cell.getCol();
 		this.type = cell.getType();
+		this.input = cell.getInput();
 	}
 
 	public RoomCell(int row, int col, String str) {
 		this.row = row;
 		this.col = col;
-		this.type = str;
+		this.input = str;
+		this.type = str.charAt(0);
 	}
 
 	public Boolean isDoorway() {
-		if (type.length() != 1) {
+		if (input.length() != 1) {
 			isDoor = true;
 		} 
 			return isDoor;
 	}
 	
 	public void setDoorDirection() {
-		if (type.length() != 1) {
-			if(type.charAt(1) == 'R')
+		if (input.length() != 1) {
+			if(input.charAt(1) == 'R')
 				dd = DoorDirection.RIGHT;
-			if (type.charAt(1) == 'L')
+			if (input.charAt(1) == 'L')
 				dd = DoorDirection.LEFT;
-			if (type.charAt(1) == 'D')
+			if (input.charAt(1) == 'D')
 				dd = DoorDirection.DOWN;
-			if (type.charAt(1) == 'U')
+			if (input.charAt(1) == 'U')
 				dd = DoorDirection.UP;
-			if (type.charAt(1) == 'N')
+			if (input.charAt(1) == 'N')
 				dd = DoorDirection.NONE;
 		}
 	}
@@ -61,11 +64,16 @@ public class RoomCell extends BoardCell {
 	}
 
 	public void setType(String temp) {
-		type = temp;
+		input = temp;
+		type = temp.charAt(0);
 	}
 
-	public String getType() {
+	public char getType() {
 		return type;
+	}
+	
+	public String getInput() {
+		return input;
 	}
 	
 	@Override
