@@ -9,16 +9,16 @@ public class RoomCell extends BoardCell {
 	private String input;
 	private int row;
 	private int col;
-	
+
 	public RoomCell() {
 		super();
 	}
-	
+
 	public RoomCell (int row, int column) {
 		this.row = row;
 		this.col = column;
 	}
-	
+
 	public RoomCell(BoardCell cell) {
 		this.row = cell.getRow();
 		this.col = cell.getCol();
@@ -35,11 +35,15 @@ public class RoomCell extends BoardCell {
 
 	public Boolean isDoorway() {
 		if (input.length() != 1) {
-			isDoor = true;
+			if(input.charAt(1) == 'N'){
+				return isDoor;
+			} else{
+				isDoor = true;
+			}
 		} 
-			return isDoor;
+		return isDoor;
 	}
-	
+
 	public void setDoorDirection() {
 		if (input.length() != 1) {
 			if(input.charAt(1) == 'R')
@@ -54,7 +58,7 @@ public class RoomCell extends BoardCell {
 				dd = DoorDirection.NONE;
 		}
 	}
-	
+
 	public DoorDirection getDoorDirection() {
 		setDoorDirection();
 		if (isDoor == true) {
@@ -71,15 +75,15 @@ public class RoomCell extends BoardCell {
 	public char getType() {
 		return type;
 	}
-	
+
 	public String getInput() {
 		return input;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "RoomCell [row=" + row + ", col=" + col + ", type=" + type
 				+ "]";
 	}
-	
+
 }

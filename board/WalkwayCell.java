@@ -5,6 +5,7 @@ public class WalkwayCell extends BoardCell {
 	private int row;
 	private int col;
 	private char type = 'W';
+	private String input = "W";
 	
 	public WalkwayCell() {
 		super();
@@ -24,6 +25,12 @@ public class WalkwayCell extends BoardCell {
 	public char getType(){
 		return type;
 	}
+	
+	public String getInput(){
+		return input;
+	}
+	
+	
 	public Boolean isDoorway(){
 		return false;
 	}
